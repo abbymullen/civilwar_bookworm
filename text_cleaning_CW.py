@@ -95,13 +95,17 @@ class Document():
 		Accomplishes this through extracting data from formulaic headings on documents
 		Tries to account for non-letter documents such as daily journal entries
 		"""
-		author = re.search(r"([Ff]rom\s)(.+)([tT]\s*o)([^,]+).*,",self.raw_text()[:150])
+		author = re.search(r"([Ff]rom\s)(.+) ([tT]\s*o)([^,]+),",self.raw_text()[:150])
 		report = re.search(r".*[Rr]eport of ([^,]+),",self.raw_text()[:150])
-		order = re.search(r".*[Oo]rder of ([\w ]+)[,.]* to.*",self.raw_text()[:250])
-		logbook = re.search(r".*[lL]og of (.+)[,.]",self.raw_text()[:250])
+		order = re.search(r".*[Oo]rder of ([^,]+)[,.]* to",self.raw_text()[:250])
+		order2 = re.search(r".*[Oo]rder of ([^,]+),",self.raw_text()[:250])
+		logbook = re.search(r".*[lL]og of ([^,]+)[,.]",self.raw_text()[:250])
 		if order:
 			order = order.group(1)
 			return order
+		if order2:
+			order2 = order2.group(1)
+			return order2
 		if logbook:
 			logbook = logbook.group(1)
 			return logbook
@@ -109,7 +113,8 @@ class Document():
 			report = report.group(1)
 			return report
 		if author: 	
-			author = author.group(2) 	 
+			author = author.group(2) 
+			author = re.sub(r"([^,]*),.*",r"\1",author)	 
 			return author
 		
 		return "Unknown"
@@ -120,9 +125,7 @@ class Document():
 		Tries to account for non-letter documents by recording an alternate "recipient"
 		"""
 		recipient = re.search(r"([Tt]\s*o )(.*)(from.*)",self.raw_text()[:250])
-		journal = re.search(r".*[Jj]ournal of ([US86\. ]+) ([\w ]{0,15})[,.]",self.raw_text()[:250])
-		if journal:
-			return "Journal Entry"
+		
 		if recipient: 	
 			recipient = recipient.group(2) 	
 			recipient = re.sub(r"(\w+\s*\w+),.*",r"\1",recipient) #attempting to clear out titles and such
@@ -157,8 +160,7 @@ if __name__=="__main__":
 		doc = Document(snippet)
 		f.write(doc.author() + '\t' + doc.raw_text() + '\n')
 	# 	f.write("ID_" + doc.id() + '\t'	+ doc.raw_text() + '\n')
-	# 	data = {'searchstring': "To " + doc.recipient() + " from " + doc.author() + ", " 
-	# 		+ doc.get_date()
+	# 	data = {'searchstring': doc.get_date() + doc.raw_text()
 	# 		, 'author': doc.author()
 	# 		, 'recipient': doc.recipient()
 	# 		, 'date': doc.get_date()
