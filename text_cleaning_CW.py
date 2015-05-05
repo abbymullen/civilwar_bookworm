@@ -156,19 +156,19 @@ class Document():
 if __name__=="__main__":
 	f = open("input.txt", "a")
 	j = open("jsoncatalog.txt", "a")
-	for snippet in snippetyielder("ofre0001.txt"):
+	for snippet in snippetyielder("CW_all.txt"):
 		doc = Document(snippet)
-		f.write(doc.author() + '\t' + doc.raw_text() + '\n')
-	# 	f.write("ID_" + doc.id() + '\t'	+ doc.raw_text() + '\n')
-	# 	data = {'searchstring': doc.get_date() + doc.raw_text()
-	# 		, 'author': doc.author()
-	# 		, 'recipient': doc.recipient()
-	# 		, 'date': doc.get_date()
-	# 		, 'filename': "ID_" + doc.id
-	# 		, 'full_text': doc.raw_text()
-	# 	} 
-	# 	data_string = json.dumps(data)
-	# 	j.write(data_string + '\n')
+		# f.write(doc.author() + '\t' + doc.raw_text() + '\n')
+		f.write("ID_" + doc.id() + '\t'	+ doc.raw_text() + '\n')
+		data = {'searchstring': doc.get_date() + doc.raw_text()
+			, 'author': doc.author()
+			, 'recipient': doc.recipient()
+			, 'date': doc.get_date()
+			, 'filename': "ID_" + doc.id
+			, 'full_text': doc.raw_text()
+		} 
+		data_string = json.dumps(data)
+		j.write(data_string + '\n')
 		
-	# j.close()
+	j.close()
 	f.close()
