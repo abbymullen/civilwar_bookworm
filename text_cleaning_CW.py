@@ -59,15 +59,56 @@ class Regexdate():
 		"""
 		Pulls out a year without recourse to datetime and corrects small OCR problems
 		""" 	 	 
-	 	year = re.search(r"[I1]\d{3}",self.string)
+	 	year = re.search(r"[I1][\dG]{3}",self.string)
 	 	if year: 	 	 	  
 	 		if re.search(r"(\d{4})",year.group()):
 	 			return year.group()
 	 		if re.search(r"I\d{3}",year.group()):
 	 			year = re.sub(r"I(\d{3})",r"1\1",year.group())
 	 			return year
+	 		if re.search(r"(\d[G\d]{3})",year.group()):
+	 			year = re.sub(r"G",r"6",year.group())
+	 			return year
 
 	 	return "Unknown" 	 	 	  
+
+	def find_month(self):
+	 	month = re.search(r"([A-Z][A-Za-z]+)\s*\d{1,2},*\s*[I1][\dG]{3}",self.string)
+	 	if month:
+	 		month = month.group(1)
+		 	if re.search(r"J[AaNn].*",month):
+		 		return "01"
+		 	if re.search(r"F[EBeb].*",month):
+		 		return "02"
+		 	if re.search(r"M[ARar].*",month):
+		 		return "03"
+		 	if re.search(r"A[PRpr].*",month):
+		 		return "04"
+		 	if re.search(r"M[AYay].*",month):
+		 		return "05"
+		 	if re.search(r"J[UNun].*",month):
+		 		return "06"
+		 	if re.search(r"J[ULul].*",month):
+		 		return "07"
+		 	if re.search(r"A[Uun].*",month):
+		 		return "08"
+		 	if re.search(r"S[Ee].*",month):
+		 		return "09"
+		 	if re.search(r"O[Cc].*",month):
+		 		return "10"
+		 	if re.search(r"N[Oo].*",month):
+		 		return "11"
+		 	if re.search(r"D[Ee].*",month):
+		 		return "12"
+		 	return month
+		return ""
+
+	def find_day(self):
+		day = re.search(r"([A-Z][A-Za-z]+)\s*(\d{1,2}),*\s*[I1][\dG]{3}",self.string)
+		if day:
+			day = day.group(2)
+			return day
+		return ""
 
 #defining a class to pull out stuff from the snippets
 class Document():
@@ -95,13 +136,16 @@ class Document():
 		"""
 		Right now this takes a string and returns a year; hopefully someday it will return a more specific date.
 		"""
-		head = self.raw_text()[:200] 	 	 
+		head = self.raw_text()[:300] 	 	 
 		parser = Regexdate(head) 	 		
-		try:
-			year = parser.find_year()		
-			return year 	
-		except:
-			return "Unknown"
+		year = parser.find_year()		
+		month = parser.find_month()
+		day = parser.find_day()
+		if day:
+			return year + "-" + month + "-" + day	
+		if year:
+			return year
+		return "Unknown"
 
 	def author(self):
 		"""
@@ -172,7 +216,7 @@ if __name__=="__main__":
 	j = open("jsoncatalog.txt", "a")
 	for snippet in snippetyielder("CW_all.txt"):
 		doc = Document(snippet)
-		# f.write(doc.author() + '\t' + doc.raw_text() + '\n')
+		# f.write(doc.get_date() + '\t' + doc.raw_text()[:250] + '\n')
 		f.write("ID_" + doc.id() + '\t'	+ doc.raw_text() + '\n')
 		data = {'searchstring': doc.get_date() + doc.raw_text()
 			, 'author': doc.author()
