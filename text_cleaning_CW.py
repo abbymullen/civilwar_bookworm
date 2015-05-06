@@ -18,19 +18,31 @@ def snippetyielder(filename):
 	p = "".join(a) 	  #detecting the breaks between documents and identifying them to break the docs with
 
 
-	docbreak = re.sub(r".*(Report .f.*)",r"DOCBREAK \1",p)
-	docbreak = re.sub(r".*(Letter from.*)",r"DOCBREAK \1",docbreak)
+	docbreak = re.sub(r".*([1\?RU]+[ce][j~p]+o[rtd\*]+ .[2Jf].*)",r"DOCBREAK \1",p)
+	docbreak = re.sub(r"(.*[lL]ett.*fro[mn].*)",r"DOCBREAK \1",docbreak)
 	docbreak = re.sub(r".*(Petition .f.*)",r"DOCBREAK \1",docbreak)
-	docbreak = re.sub(r".*(Order of.*)",r"DOCBREAK \1",docbreak)
-	docbreak = re.sub(r".*(\[Telegram.\].*)",r"DOCBREAK \1",docbreak)
+	docbreak = re.sub(r".*(Order o[/f].*)",r"DOCBREAK \1",docbreak)
+	docbreak = re.sub(r".*(General order of.*)",r"DOCBREAK \1",docbreak)
+	docbreak = re.sub(r".*(Special order of.*)",r"DOCBREAK \1",docbreak)
+	docbreak = re.sub(r".*(Unofficial letter of.*)",r"DOCBREAK \1",docbreak)
+	docbreak = re.sub(r".*(Letter of .*)",r"DOCBREAK \1",docbreak)
+	docbreak = re.sub(r".*([\[I\]]\s*T[cue]legram.*)",r"DOCBREAK \1",docbreak)
 	docbreak = re.sub(r".*(\[Enclosure.+\].*)",r"DOCBREAK \1",docbreak)
-	docbreak = re.sub(r".*(Extract from report.*)",r"DOCBREAK \1",docbreak)
-	docbreak = re.sub(r".*(Abstract of log.*)",r"DOCBREAK \1",docbreak)
+	docbreak = re.sub(r".*(Extracts* from .*)",r"DOCBREAK \1",docbreak)
+	docbreak = re.sub(r".*(A[hb]stract[of ]*log.*)",r"DOCBREAK \1",docbreak)
 	docbreak = re.sub(r".*(Instructions from.*)",r"DOCBREAK \1",docbreak)
+	docbreak = re.sub(r".*(A[hb]stract of statement.*)",r"DOCBREAK \1",docbreak)
+	docbreak = re.sub(r".*(Instructions* of.*)",r"DOCBREAK \1",docbreak)
 	docbreak = re.sub(r".*(Memorandum from.*)",r"DOCBREAK \1",docbreak)
+	docbreak = re.sub(r".*([llifM]+emorandum of.*)",r"DOCBREAK \1",docbreak)
 	docbreak = re.sub(r".*(Communication from.*)",r"DOCBREAK \1",docbreak)
 	docbreak = re.sub(r".*(Statement of circumstances.*)",r"DOCBREAK \1",docbreak)
 	docbreak = re.sub(r".*(Further report of.*)",r"DOCBREAK \1",docbreak)
+	docbreak = re.sub(r".*(Second report of.*)",r"DOCBREAK \1",docbreak)
+	docbreak = re.sub(r".*(Additional report of.*)",r"DOCBREAK \1",docbreak)
+	docbreak = re.sub(r".*(Detailed repor[~t] of.*)",r"DOCBREAK \1",docbreak)
+	docbreak = re.sub(r".*(General report of.*)",r"DOCBREAK \1",docbreak)
+	docbreak = re.sub(r".*(Deposition of.*)",r"DOCBREAK \1",docbreak)
 	# docbreak = re.sub(r"(DOCBREAK)+",r"DOCBREAK\n",docbreak) 	
 	docbreaks = docbreak.split("DOCBREAK") 	  #yielding one document at a time
 	for doc in docbreaks:
@@ -73,6 +85,8 @@ class Document():
 		 #eliminating more headers
 		raw_text = re.sub(r".*OPERATIONS O[PF].*",r"",self.doc)
 		raw_text = re.sub(r"Page \d+",r"",raw_text)
+		raw_text = re.sub(r".*B[lL]OCK.*",r"",raw_text)
+		raw_text = re.sub(r".*WEST GULF.*",r"",raw_text)
 		raw_text = re.sub(r"\s",r" ", raw_text) #eliminating tabs etc. 	 	  
 		return raw_text
 	
