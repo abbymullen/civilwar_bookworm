@@ -219,7 +219,7 @@ if __name__=="__main__":
 		doc = Document(snippet)
 		# f.write(doc.get_date() + '\t' + doc.raw_text()[:250] + '\n')
 		f.write("ID_" + doc.id() + '\t'	+ doc.raw_text() + '\n')
-		data = {'searchstring': doc.get_date() + doc.raw_text()
+		data = {'searchstring': doc.get_date() + ' / ' + doc.raw_text()
 			, 'author': doc.author()
 			, 'recipient': doc.recipient()
 			, 'date': doc.get_date()
