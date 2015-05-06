@@ -128,6 +128,7 @@ class Document():
 		raw_text = re.sub(r"Page \d+",r"",raw_text)
 		raw_text = re.sub(r".*B[lL]OCK.*",r"",raw_text)
 		raw_text = re.sub(r".*WEST GULF.*",r"",raw_text)
+		raw_text = re.sub(r".*NAVAL FORCES ON.*",r"",raw_text)
 		raw_text = re.sub(r"\s",r" ", raw_text) #eliminating tabs etc. 	 	  
 		return raw_text
 	
