@@ -55,22 +55,30 @@ class Regexdate():
  	"""  Initialized with a portion of a string suspected to contain a date. 	 	 	 
  	""" 	 	 	   
 
-	def find_year(self): 	
+	def find_year(self,datelimits): 	
 		"""
 		Pulls out a year without recourse to datetime and corrects small OCR problems
 		""" 	 	 
-	 	year = re.search(r"[I1][\dG]{3}",self.string)
-	 	if year: 	 	 	  
-	 		if re.search(r"(\d{4})",year.group()):
-	 			return year.group()
-	 		if re.search(r"I\d{3}",year.group()):
-	 			year = re.sub(r"I(\d{3})",r"1\1",year.group())
-	 			return year
-	 		if re.search(r"(\d[G\d]{3})",year.group()):
-	 			year = re.sub(r"G",r"6",year.group())
-	 			return year
+                year = ""
 
-	 	return "Unknown" 	 	 	  
+	 	match = re.search(r"[I1][\dG]{3}",self.string)
+
+	 	if match: 	 	 	  
+	 		if re.search(r"(\d{4})",match.group()):
+	 			year = match.group()
+                        elif re.search(r"I\d{3}",match.group()):
+	 			match = re.sub(r"I(\d{3})",r"1\1",match.group())
+	 			year = match
+	 		elif re.search(r"(\d[G\d]{3})",match.group()):
+	 			match = re.sub(r"G",r"6",match.group())
+	 			year = match
+
+                
+                if year == "" or int(year) < datelimits[0] or int(year) > datelimits[1]:
+                        year = ""
+                                
+
+	 	return year	 	 	  
 
 	def find_month(self):
 	 	month = re.search(r"([A-Z][A-Za-z]+)\s*\d{1,2},*\s*[I1][\dG]{3}",self.string)
@@ -133,20 +141,20 @@ class Document():
 		return raw_text
 	
 
-	def get_date(self):
+	def get_date(self,yearlimits=[1500,2020]):
 		"""
 		Right now this takes a string and returns a year; hopefully someday it will return a more specific date.
 		"""
 		head = self.raw_text()[:300] 	 	 
 		parser = Regexdate(head) 	 		
-		year = parser.find_year()		
+		year = parser.find_year(yearlimits)		
 		month = parser.find_month()
 		day = parser.find_day()
-		if day:
+		if day and year != "":
 			return year + "-" + month + "-" + day	
 		if year:
 			return year
-		return "Unknown"
+		return ""
 
 	def author(self):
 		"""
@@ -219,10 +227,11 @@ if __name__=="__main__":
 		doc = Document(snippet)
 		# f.write(doc.get_date() + '\t' + doc.raw_text()[:250] + '\n')
 		f.write("ID_" + doc.id() + '\t'	+ doc.raw_text() + '\n')
-		data = {'searchstring': doc.get_date() + ' / ' + doc.raw_text()
+                date = doc.get_date([1859,1866])
+		data = {'searchstring': date + ' / ' + doc.raw_text()
 			, 'author': doc.author()
 			, 'recipient': doc.recipient()
-			, 'date': doc.get_date()
+			, 'date': date
 			, 'filename': "ID_" + doc.id
 			, 'full_text': doc.raw_text()
 		} 
