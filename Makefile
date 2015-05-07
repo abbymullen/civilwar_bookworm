@@ -1,7 +1,20 @@
 all: edit_ofre0001.txt edit_ofre0002.txt edit_ofre0003.txt edit_ofre0004.txt edit_ofre0005.txt edit_ofre0006.txt edit_ofre0007.txt edit_ofre0008.txt edit_ofre0009.txt edit_ofre0010.txt edit_ofre0011.txt edit_ofre0012.txt edit_ofre0013.txt edit_ofre0014.txt edit_ofre0015.txt edit_ofre0016.txt edit_ofre0017.txt edit_ofre0018.txt edit_ofre0019.txt edit_ofre0020.txt edit_ofre0021.txt edit_ofre0022.txt edit_ofre0023.txt edit_ofre0024.txt edit_ofre0025.txt edit_ofre0026.txt edit_ofre0027.txt CW_all.txt input.txt jsoncatalog.txt
 
-%.txt:
-	curl -O http://ebooks.library.cornell.edu/m/moawar/text/ofre00[01-27].txt
+ofre%.txt:
+	curl -O http://ebooks.library.cornell.edu/m/moawar/text/$@
+
+CW_all.txt:
+	cat $(wildcard edit*.txt) >> CW_all.txt 
+
+input.txt jsoncatalog.txt:CW_all.txt
+	python text_cleaning_CW.py
+
+bookworm: input.txt jsoncatalog.txt
+	git clone https://github.com/Bookworm-project/BookwormDB.git bookworm
+	$(MAKE) -C bookworm
+
+
+# These substitutions trim front- and end-matter
 
 edit_ofre0001.txt:ofre0002.txt
 	sed -n 661,51178p ofre0001.txt > edit_ofre0001.txt
@@ -84,12 +97,3 @@ edit_ofre0026.txt:ofre0026.txt
 edit_ofre0027.txt:ofre0027.txt
 	sed -n 1496,46328p ofre0027.txt > edit_ofre0027.txt
 
-CW_all.txt:
-	cat $(wildcard edit*.txt) >> CW_all.txt 
-
-input.txt jsoncatalog.txt:CW_all.txt
-	python text_cleaning_CW.py
-
-bookworm:
-	git clone https://github.com/Bookworm-project/BookwormDB.git bookworm
-	$(MAKE) -C bookworm
